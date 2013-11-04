@@ -14,23 +14,39 @@
 
 		var unsaved_changes = false;
 		$(window).bind('beforeunload', function() {
+            if (mdid.debug === true) console.log('bind presentation before_unload check');
+
 			if (unsaved_changes)
 				return 'You made changes to your presentation slides that will be lost if you continue.';
 		});
 		function mark_unsaved_changes(saved) {
+                        if (mdid.debug === true) console.log('mark_unsaved_changes');
+
 			unsaved_changes = (saved != 'saved');
 			$('#update-items').css('font-weight', unsaved_changes ? 'bolder' : '');
 		}
 
-        $("#items tbody tr").each(function(i, e) {
-            var inputs = $(".thumbnail-col", e).children().not('a');
-            var thumbnail = $(".thumbnail-col a", e).children();
-            var title = $("<div class='title'>").html($(".title-col", e).html());
-            var order = $(".order-col", e).children().hide();
-            var controls = $(".controls", e).children().hide();
-            var annotation = $(".annotation-col", e).children().hide();
-            $("#lighttable").append($("<div class='slide' id='slide" + i + "'>").append(inputs, thumbnail, title, order, annotation, controls));
-        });
+        mdid.generateLightTable = function(){
+
+            if (mdid.debug === true) console.log('generating light table');
+            if (mdid.debug === true) console.log($("#items"));
+
+           $("#items tbody tr").each(function(i, e) {
+
+                var inputs = $(".thumbnail-col", e).children().not('a');
+                var thumbnail = $(".thumbnail-col a", e).children();
+                var title = $("<div class='title'>").html($(".title-col", e).html());
+                var order = $(".order-col", e).children().hide();
+                var controls = $(".controls", e).children().hide();
+                var annotation = $(".annotation-col", e).children().hide();
+                $("#lighttable").append($("<div class='slide' id='slide" + i + "'>")
+                        .append(inputs, thumbnail, title, order, annotation, controls));
+           });
+        }
+
+        // TODO: is a check/deferral needed here?  The table should always load, but this is what isn't executing on some pages
+        mdid.generateLightTable();
+
 
         $("#lighttable-buttons").show().children("button").attr('disabled', true);
 

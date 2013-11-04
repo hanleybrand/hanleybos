@@ -199,7 +199,7 @@
 
 {% block javascript %}
 {% compress js %}
-    <script type="text/javascript" src="{% url static 'jquery/jquery-1.4.4.min.js' %}"></script>
+    <script type="text/javascript" src="{% url static 'js/jquery-1.8.3.js' %}"></script>
     <script type="text/javascript" src="{% url static 'jquery/jquery-ui-1.8.11.custom.min.js' %}"></script>
     <script type="text/javascript" src="{% url static 'jquery/jquery.cookie.js' %}"></script>
     <script type="text/javascript" src="{% url static 'jquery/jquery.hoverIntent.minified.js' %}"></script>
@@ -221,17 +221,26 @@
     <!--<script type="text/javascript" src="/jsi18n/"></script>-->
 
     <script type="text/javascript">
+
+    var mdid = {
+        debug : true,
+    }
+
         function basket_imgs_first_row_top() {
+            if (mdid.debug === true) console.log('basket_imgs_first_row_top');
             return ($("#basket-thumbs img:visible:first").position() || Object({top: 0})).top;
         }
 
         function basket_scroll_arrows() {
+            if (mdid.debug === true) console.log('basket_scroll_arrows');
+
             $("#basket-scroll-left").css("visibility", ($("#basket-thumbs img:hidden:first").length > 0) ? "visible" : "hidden");
             var first_row_top = basket_imgs_first_row_top();
             $("#basket-scroll-right").css("visibility",  ($("#basket-thumbs img").filter(function() { return ($(this).position().top > first_row_top); }).length > 0) ? "visible" : "hidden");
         }
 
         function recordSelection(ids, checked) {
+            if (mdid.debug === true) console.log('recordSelection' + ids, checked);
             var method = ids == 0 ? 'GET' : 'POST';
             if (ids.constructor != Array) ids = [ids];
             ids = $.map(ids, function(e) { return parseInt(e); });
@@ -253,11 +262,13 @@
         }
 
         function bindSelectRecordCheckboxes() {
+            if (mdid.debug === true) console.log('bindSelectRecordCheckboxes');
             $(".record-select").click(function() { recordSelection($(this).attr('value'), $(this).attr('checked')); });
         }
 
 
         function add_metadata_popup(context) {
+            if (mdid.debug === true) console.log('add_metadata_popup ' + context);
             $(".metadata-anchor[id*=record-id-]", context).not(".no-metadata-popup").each(function() {
                 var anchor = $(this);
                 var id = anchor.attr("id");
@@ -300,6 +311,7 @@
 
 
         function store_profile_setting(key, value) {
+            if (mdid.debug === true) console.log('store_profile_setting ' + key, value );
             ajaxInteractionManager.add({
                 type: 'POST',
                 url: '{% url userprofile-store %}',
@@ -309,6 +321,7 @@
         }
 
         function process_facets() {
+            if (mdid.debug === true) console.log('process_facets');
             var freqs = Object();
             function sortByFreq(a, b) {
                 var fa = freqs[a.id];
@@ -354,6 +367,7 @@
         };
 
         function addCopyLinkIcon(item) {
+            if (mdid.debug === true) console.log('addCopyLinkIcon');
             if (!item.attr('href') || item.hasClass('nocopylink')) return;
             var host = window.location.href.substring(0, window.location.href.length - window.location.pathname.length - window.location.search.length);
             var url = host + item.attr('href').replace(/\?.+/, '');
@@ -397,6 +411,7 @@
         }
 
         function keepAtTop(element, not_past) {
+            if (mdid.debug === true) console.log('keepAtTop(element, not_past): ' + element, not_past);
             if (!keepAtTop.elements) keepAtTop.elements = Array();
             keepAtTop.elements.push(
                 element.css("position", "relative").css("top", "0").css('z-index',
@@ -431,6 +446,7 @@
         }
 
         $(document).ready(function() {
+            if (mdid.debug === true) console.log('master.html doc ready');
             var timeouts = Object();
             var resetwidth = function() { $(this).width($(this).parent().width() + 50); };
             $("#header ul.menu").each(resetwidth).hide();
@@ -449,6 +465,7 @@
             $("#quicksearch").hint();
 
             function hideBasket(immediate) {
+                if (mdid.debug === true) console.log('hidebasket');
                 if (basket_open) return;
                 $("#basket-toggle").text("Show");
                 if (immediate)
@@ -457,12 +474,14 @@
                     $("#basket-content").slideUp();
             }
             function showBasket() {
+                if (mdid.debug === true) console.log('showBasket');
                 $("#basket-toggle").text("Hide");
                 $("#basket-content").slideDown();
                 basket_scroll_arrows();
             }
 
             $("#basket-toggle").click(function(e) {
+                if (mdid.debug === true) console.log('basket-toggle clicked');
                 e.preventDefault();
                 basket_open = !basket_open;
                 store_profile_setting('ui_basket_open', basket_open);
@@ -526,6 +545,7 @@
                     ui.draggable.parents(".record").find("input.record-select").attr('checked', true);
                 },
                 activate: function(event, ui) {
+                    if (mdid.debug === true) console.log('activate (#basket-content).droppable');
                     ui.helper.css('z-index', '10001');
                 }
             });
